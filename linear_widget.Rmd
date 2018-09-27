@@ -37,3 +37,59 @@ leaflet_l <- leaflet()%>%addTiles()%>%addPolylines(data=linear_shared_data)
 linear_widget <- bscols(list(slider_l,checkbox_l,dropdown_l,leaflet_l,datatable_l))
 save_html(linear_widget,"try3.html")
 ```
+
+```{r pressure, echo=FALSE}
+require(ggplot2)
+require(lubridate)
+require(maptools)
+require(leaflet)
+require(tidyverse)
+require(mapview)
+require(maptools)
+require(htmlwidgets)
+require(scales)
+require(grid)
+require(scales)
+require(grid)
+require(raster)
+require(sf)
+require(shiny)
+require(DT)
+require(crosstalk)
+require(htmltools)
+slider_l <- filter_slider("Completion.Date", "Choose Date Range", linear_shared_data_2_df, ~Completion.Date, step = 60, ticks = TRUE, animate = FALSE)
+checkbox_l <- filter_checkbox("status_type","Project Status", linear_shared_data_2_df, ~status_type, inline = TRUE)
+dropdown_l <- filter_select("Industry","Industry", linear_shared_data_2_df, ~factor(Industry))
+datatable_l <- datatable(linear_shared_data_2_df, extensions="Scroller", style="bootstrap", class="compact", width="100%",
+options=list(deferRender=TRUE, scrollY=500, scroller=TRUE))
+plotly_l <- 
+linear_widget <- bscols(list(slider_l,checkbox_l,dropdown_l,leaflet_l,datatable_l))
+save_html(linear_widget,"try3.html")
+```
+
+```{r, echo=FALSE}
+require(plotly)
+require(htmltools)
+plotly_plot <- plot_geo(linear_multistring2)
+save_html(plotly_plot, "alpha1.html")
+```
+
+```{r, echo=FALSE}
+require(plotly)
+require(htmltools)
+plotly_plot2 <- plot_mapbox(linear_multistring2)%>% config(displayModeBar = F) %>% layout(xaxis=list(fixedrange=FALSE)) %>% layout(yaxis=list(fixedrange=FALSE))
+save_html(plotly_plot2, "alpha2.html")
+```
+
+```{r}
+require(plotly)
+require(DT)
+require(crosstalk)
+slider_l2 <- filter_slider("Completion.Date", "Choose Date Range", linear_shared_data2, ~Completion.Date, step = 60, ticks = TRUE, animate = FALSE)
+checkbox_l2 <- filter_checkbox("status_type","Project Status", linear_shared_data2, ~status_type, inline = TRUE)
+dropdown_l2 <- filter_select("Industry","Industry", linear_shared_data2, ~factor(Industry))
+plotly_plot4 <- plot_geo(linear_shared_data2)%>%layout(geo=g)%>%config(displayModeBar = F) %>% layout(xaxis=list(fixedrange=FALSE)) %>% layout(yaxis=list(fixedrange=FALSE))
+linear_widget2 <- bscols(list(slider_l2,checkbox_l2,dropdown_l2,plotly_plot4))
+save_html(linear_widget2, "linear_widget2.html")
+```
+
