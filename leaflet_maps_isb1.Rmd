@@ -1,0 +1,235 @@
+---
+title: "leaflet_maps"
+author: "Shamil"
+date: "September 26, 2018"
+output: html_document
+---
+
+```{r Chunk1, echo=FALSE}
+library(leaflet)
+library(leaflet.extras)
+library(tidyverse)
+library(dplyr)
+library(maps)
+library(sp)
+library(htmlwidgets)
+pal <- colorFactor(c("Green", "Navy", "Red"), domain = c("Under Implementation", "Announced", "Completed"))
+newmapfrombeggining <- leaflet(options = leafletOptions(preferCanvas = TRUE)) %>%
+addProviderTiles(providers$CartoDB.Positron, options = providerTileOptions(updateWhenZooming = FALSE, updateWhenIdle = TRUE), group = "Carto Simple Outline") %>% addProviderTiles(providers$OpenTopoMap, options = providerTileOptions(updateWhenZooming = FALSE, updateWhenIdle = TRUE), group = "Openstreet Topo Map") %>% addProviderTiles(providers$NASAGIBS.ModisTerraTrueColorCR, options = providerTileOptions(updateWhenZooming = FALSE, updatewhenIdle = TRUE), group = "MODIS Terraband True ColorCR") %>%
+addPolygons(data = India_level_three, stroke = TRUE, color = "black", weight = 0.2, fillOpacity = 0.2, fill = FALSE, smoothFactor = 0.5, group = "Taluka Level Outline") %>%addLegend(pal = pal, values = all_single_nonempty_entries_new$Project.Status, opacity = 1, group = "Projects by Status") %>%
+addCircleMarkers(data = all_single_nonempty_entries_new, lng = ~Latitude,  lat = ~Longitude, radius = 6,color = ~pal(all_single_nonempty_entries_new$Project.Status), stroke = FALSE, fillOpacity = 1, popup = ~paste                  ("Company:", all_single_nonempty_entries_new$Company.x, "<br>",                    "Project Name:", all_single_nonempty_entries_new$Project.Name.x, "<br>",                     "Location:", all_single_nonempty_entries_new$Location, "<br>",                     "District:", all_single_nonempty_entries_new$District, "<br>",                     "State:", all_single_nonempty_entries_new$State, "<br>",                     "UID:", all_single_nonempty_entries_new$UID,"<br>"), group = "Projects by Status") %>%
+addLayersControl(baseGroups = c("Openstreet Topo Map", "Carto Simple Outline", "MODIS Terraband True ColorCR"), overlayGroups = c("Projects by Status", "Taluka Level Outline"), options = layersControlOptions(collapsed = FALSE)) %>%
+addMiniMap()%>%
+addSearchGoogle() %>%
+addResetMapButton() 
+saveWidget(newmapfrombeggining, "testingforover2.html", selfcontained = FALSE)
+```
+
+
+```{r Chunk2, echo=FALSE}
+library(leaflet)
+library(leaflet.extras)
+library(tidyverse)
+library(dplyr)
+library(maps)
+library(sp)
+library(htmlwidgets)
+library(htmltools)
+library(maptools)
+library(stringr)
+pal <- colorFactor(c("chartreuse2", "paleturquoise4", "lightcoral"), domain = c("Announced", "Completed", "Under Implementation"))
+newmapfrombeggining4 <- leaflet(data = splndf_new, options = leafletOptions(preferCanvas = TRUE)) %>%
+addProviderTiles(providers$CartoDB.Positron, options = providerTileOptions(updateWhenZooming = FALSE, updateWhenIdle = TRUE), group = "Carto Simple Outline") %>% addProviderTiles(providers$OpenTopoMap, options = providerTileOptions(updateWhenZooming = FALSE, updateWhenIdle = TRUE), group = "Openstreet Topo Map") %>% addProviderTiles(providers$NASAGIBS.ModisTerraTrueColorCR, options = providerTileOptions(updateWhenZooming = FALSE, updatewhenIdle = TRUE), group = "MODIS Terraband True ColorCR") %>%
+addPolygons(data = India_level_three, stroke = TRUE, color = "black", weight = 0.2, fillOpacity = 0.2, fill = FALSE, smoothFactor = 0.5, group = "Taluka Level Outline") %>%addLegend(pal = pal, values = splndf_new@data$Project.Status, opacity = 1) %>%
+addPolylines(stroke = TRUE, color = ~pal(splndf_new@data$Project.Status), popup = ~paste(
+  "Company:", splndf_new@data$Company.x, "<br>", 
+  "Project Name:", splndf_new@data$Project.Name.x, "<br>",
+  "Location:", splndf_new@data$Location, "<br>",
+  "District:", splndf_new@data$District, "<br>", 
+  "State:", splndf_new@data$State, "<br>",
+  "UID:", splndf_new@data$newUID,"<br>",
+  "Project_Status:", splndf_new@data$Project.Status, "<br>",
+  "Project Cost:", splndf_new@data$Cost..Rs..Million.,"<br>",
+  "Length:", splndf_new@data$Linelengths_kms,"<br>"
+  ), group = "Linear Projects by Status") %>%
+  addCircleMarkers(data = all_single_nonempty_entries_new, lng = ~Latitude,  lat = ~Longitude, radius = 6,color = ~pal(all_single_nonempty_entries_new$Project.Status), stroke = FALSE, fillOpacity = 0.4, popup = ~paste(
+    "Company:", all_single_nonempty_entries_new$Company.x, "<br>",
+    "Project Name:", all_single_nonempty_entries_new$Project.Name.x, "<br>",
+    "Location:", all_single_nonempty_entries_new$Location, "<br>",
+    "District:", all_single_nonempty_entries_new$District, "<br>",
+    "State:", all_single_nonempty_entries_new$State, "<br>",
+    "UID:", all_single_nonempty_entries_new$UID,"<br>",
+    "Project_Status:", all_single_nonempty_entries_new$Project.Status, "<br>",
+    "Project Cost:", all_single_nonempty_entries_new$Cost..Rs..Million.,"<br>"
+  ), group = "Non-Linear Projects by Status") %>%
+addLayersControl(baseGroups = c("Openstreet Topo Map", "Carto Simple Outline", "MODIS Terraband True ColorCR"), overlayGroups = c("Linear Projects by Status",                                                                         "Non-Linear Projects by Status",                                                                     "Taluka Level Outline"),
+options = layersControlOptions(collapsed = FALSE)) %>%
+addMiniMap()%>%
+addSearchGoogle() %>%
+addResetMapButton() 
+saveWidget(newmapfrombeggining4, "projectsbystatus.html", selfcontained = FALSE)
+```
+
+```{r Chunk3, echo = FALSE}
+library(leaflet)
+library(leaflet.extras)
+library(tidyverse)
+library(dplyr)
+library(maps)
+library(sp)
+library(htmlwidgets)
+library(maptools)
+library(stringr)
+bins <- c(0, 100, 500, 1000, 5000, 10000, 20000, 50000, Inf)
+costpal <- colorBin(palette = "YlOrRd", domain = all_single_nonempty_entries_new$Cost..Rs..Million., bins = bins)
+mapcheck <- leaflet()
+costpal2 <- colorBin(palette = "YlOrRd", domain = splndf_new@data$Cost..Rs..Million., bins = bins )
+mapcheck <- leaflet(data = splndf_new, options = leafletOptions(preferCanvas = TRUE)) %>%
+addProviderTiles(providers$CartoDB.Positron, options = providerTileOptions(updateWhenZooming = FALSE, updateWhenIdle = TRUE), group = "Carto Simple Outline") %>% addProviderTiles(providers$OpenTopoMap, options = providerTileOptions(updateWhenZooming = FALSE, updateWhenIdle = TRUE), group = "Openstreet Topo Map") %>% 
+addPolygons(data = India_level_three, stroke = TRUE, color = "black", weight = 0.2, fillOpacity = 0.2, fill = FALSE, smoothFactor = 0.5, group = "Taluka Level Outline") %>%
+addCircleMarkers(data = all_single_nonempty_entries_new, lng = ~Latitude,  lat = ~Longitude, radius = 6,color = ~costpal(Cost..Rs..Million.), stroke = FALSE, fillOpacity = 0.4, popup = ~paste(
+    "Company:", all_single_nonempty_entries_new$Company.x, "<br>",
+    "Project Name:", all_single_nonempty_entries_new$Project.Name.x, "<br>",
+    "Location:", all_single_nonempty_entries_new$Location, "<br>",
+    "District:", all_single_nonempty_entries_new$District, "<br>",
+    "State:", all_single_nonempty_entries_new$State, "<br>",
+    "UID:", all_single_nonempty_entries_new$UID,"<br>",
+    "Project Status:", all_single_nonempty_entries_new$Project.Status, "<br>",
+    "Project Cost:", all_single_nonempty_entries_new$Cost..Rs..Million.,"<br>"
+  ), group = "Non-Linear Projects by Cost") %>%
+addPolylines(stroke = TRUE, color = ~costpal2(Cost..Rs..Million.), popup = ~paste(
+  "Company:", splndf_new@data$Company.x, "<br>", 
+  "Project Name:", splndf_new@data$Project.Name.x, "<br>",
+  "Location:", splndf_new@data$Location, "<br>",
+  "District:", splndf_new@data$District, "<br>", 
+  "State:", splndf_new@data$State, "<br>",
+  "UID:", splndf_new@data$newUID,"<br>",
+  "Project Status:", splndf_new@data$Project.Status, "<br>",
+  "Project Cost (In Million Rs):", splndf_new@data$Cost..Rs..Million., "<br>"
+  ), group = "Linear Projects by Cost") %>%
+addLegend("bottomleft", pal = costpal, values = ~Cost..Rs..Million., title = "Cost in Million Rupees", opacity = 1, group = "Non-Linear Projects by Cost")%>%
+addLegend("bottomleft", pal = costpal2, values = ~Cost..Rs..Million., title = "Cost in Million Rupees", opacity = 1, group = "Linear Projects by Cost")%>%
+addLayersControl(baseGroups = c("Openstreet Topo Map", "Carto Simple Outline"), 
+                 overlayGroups = c("Taluka Level Outline", "Non-Linear Projects by Cost", "Linear Projects by Cost"), options = layersControlOptions(collapsed = FALSE))%>%
+addMiniMap()%>%
+addSearchGoogle() %>%
+addResetMapButton() %>%
+hideGroup("Non-Linear Projects by Cost")
+saveWidget(mapcheck, "projectsbycost.html", selfcontained = FALSE)
+```
+
+```{r Chunk4, echo = FALSE}
+library(leaflet)
+library(leaflet.extras)
+library(tidyverse)
+library(dplyr)
+library(maps)
+library(sp)
+library(htmlwidgets)
+library(maptools)
+library(stringr)
+library(rgeos)
+newmapfrombeggining5 <- leaflet(data = splndf_new2)%>%addTiles()%>%addPolygons()
+saveWidget(newmapfrombeggining5, "buffer2.html", selfcontained = FALSE)
+```
+
+```{r Chunk6, echo=FALSE}
+library(leaflet)
+library(leaflet.extras)
+library(tidyverse)
+library(dplyr)
+library(maps)
+library(sp)
+library(htmlwidgets)
+library(htmltools)
+library(maptools)
+library(stringr)
+pal <- colorFactor(c("#088918", "#e6194B", "#4363d8", 
+                     "#44ff00", "#800000", "#911eb4",
+                     "#bfef45","#f58231","#000075"), 
+                   domain = c("New Unit: Announced",
+                              "New Unit: Completed",
+                              "New Unit: Under Implementation",
+                              "Renovation & Modernisation: Announced",
+                              "Renovation & Modernisation: Completed",
+                              "Renovation & Modernisation: Under Implementation",
+                              "Substantial Expansion: Announced", 
+                              "Substantial Expansion: Completed",
+                              "Substantial Expansion: Under Implementation"))
+newmapfrombeggining6 <- leaflet(data = splndf_new, options = leafletOptions(preferCanvas = TRUE)) %>%
+addProviderTiles(providers$CartoDB.Positron, options = providerTileOptions(updateWhenZooming = FALSE, updateWhenIdle = TRUE), group = "Carto Simple Outline") %>% addProviderTiles(providers$OpenTopoMap, options = providerTileOptions(updateWhenZooming = FALSE, updateWhenIdle = TRUE), group = "Openstreet Topo Map") %>% addProviderTiles(providers$NASAGIBS.ModisTerraTrueColorCR, options = providerTileOptions(updateWhenZooming = FALSE, updatewhenIdle = TRUE), group = "MODIS Terraband True ColorCR") %>%
+addPolygons(data = India_level_three, stroke = TRUE, color = "black", weight = 0.2, fillOpacity = 0.2, fill = FALSE, smoothFactor = 0.5, group = "Taluka Level Outline") %>%addLegend(pal = pal, values = splndf_new@data$status_type, opacity = 1) %>%
+addPolylines(stroke = TRUE, color = ~pal(splndf_new@data$status_type), popup = ~paste(
+  "Company:", splndf_new@data$Company.x, "<br>", 
+  "Project Name:", splndf_new@data$Project.Name.x, "<br>",
+  "Location:", splndf_new@data$Location, "<br>",
+  "District:", splndf_new@data$District, "<br>", 
+  "State:", splndf_new@data$State, "<br>",
+  "UID:", splndf_new@data$newUID,"<br>",
+  "Project_Status:", splndf_new@data$Project.Status, "<br>",
+  "Project Cost:", splndf_new@data$Cost..Rs..Million.,"<br>",
+  "Length:", splndf_new@data$Linelengths_kms,"<br>",
+  "Status Type:", splndf_new@data$status_type, "<br>"
+  ), group = "Linear Projects by Status") %>%
+  addCircleMarkers(data = all_single_nonempty_entries_new, lng = ~Latitude,  lat = ~Longitude, radius = 6,color = ~pal(all_single_nonempty_entries_new$status_type), stroke = FALSE, fillOpacity = 0.4, popup = ~paste(
+    "Company:", all_single_nonempty_entries_new$Company.x, "<br>",
+    "Project Name:", all_single_nonempty_entries_new$Project.Name.x, "<br>",
+    "Location:", all_single_nonempty_entries_new$Location, "<br>",
+    "District:", all_single_nonempty_entries_new$District, "<br>",
+    "State:", all_single_nonempty_entries_new$State, "<br>",
+    "UID:", all_single_nonempty_entries_new$UID,"<br>",
+    "Project_Status:", all_single_nonempty_entries_new$Project.Status, "<br>",
+    "Project Cost:", all_single_nonempty_entries_new$Cost..Rs..Million.,"<br>",
+    "Status Type:", all_single_nonempty_entries_new$status_type,"<br>"
+  ), group = "Non-Linear Projects by Status") %>%
+addLayersControl(baseGroups = c("Openstreet Topo Map", "Carto Simple Outline", "MODIS Terraband True ColorCR"), overlayGroups = c("Linear Projects by Status",                                                                         "Non-Linear Projects by Status",                                                                     "Taluka Level Outline"),
+options = layersControlOptions(collapsed = FALSE)) %>%
+addMiniMap()%>%
+addSearchGoogle() %>%
+addResetMapButton() 
+saveWidget(newmapfrombeggining6, "statusandunittypes.html", selfcontained = FALSE)
+```
+
+```{r Chunk7, echo=FALSE}
+library(leaflet)
+library(leaflet.extras)
+library(tidyverse)
+library(dplyr)
+library(maps)
+library(sp)
+library(htmlwidgets)
+library(mapview)
+pal <- colorFactor(c("Green", "Navy", "Red"), domain = c("Under Implementation", "Announced", "Completed"))
+newmapfrombeggining7 <- leaflet(options = leafletOptions(preferCanvas = TRUE)) %>%
+addProviderTiles(providers$CartoDB.Positron, options = providerTileOptions(updateWhenZooming = FALSE, updateWhenIdle = TRUE), group = "Carto Simple Outline") %>% addProviderTiles(providers$OpenTopoMap, options = providerTileOptions(updateWhenZooming = FALSE, updateWhenIdle = TRUE), group = "Openstreet Topo Map") %>% addProviderTiles(providers$NASAGIBS.ModisTerraTrueColorCR, options = providerTileOptions(updateWhenZooming = FALSE, updatewhenIdle = TRUE), group = "MODIS Terraband True ColorCR") %>%
+addPolygons(data = India_level_three, stroke = TRUE, color = "black", weight = 0.2, fillOpacity = 0.2, fill = FALSE, smoothFactor = 0.5, group = "Taluka Level Outline") %>%addLegend(pal = pal, values = all_single_nonempty_entries_new$Project.Status, opacity = 1, group = "Projects by Status") %>%
+addCircleMarkers(data = all_single_nonempty_entries_new, lng = ~Latitude,  lat = ~Longitude, radius = 6,color = ~pal(all_single_nonempty_entries_new$Project.Status), stroke = FALSE, fillOpacity = 1, popup = popupTable(all_single_nonempty_entries_new), group = "Projects by Status") %>%
+addLayersControl(baseGroups = c("Openstreet Topo Map", "Carto Simple Outline", "MODIS Terraband True ColorCR"), overlayGroups = c("Projects by Status", "Taluka Level Outline"), options = layersControlOptions(collapsed = FALSE)) %>%
+addMiniMap()%>%
+addSearchGoogle() %>%
+addResetMapButton() 
+saveWidget(newmapfrombeggining7, "mapviewpopups.html", selfcontained = FALSE)
+```
+
+```{r Chunk8, echo=FALSE}
+library(leaflet)
+library(leaflet.extras)
+library(tidyverse)
+library(dplyr)
+library(maps)
+library(sp)
+library(htmlwidgets)
+library(mapview)
+library(crosstalk)
+library(htmltools)
+library(ggplot2)
+library(DT) 
+try4 <- bscols(width = c(4,4,4,12,12),filter_slider("Dates", "Choose Date Range", df, ~Event.Date2, step = 60, ticks = TRUE, animate = FALSE), filter_select("Industry","Industry", df, ~factor(Industry)), filter_checkbox("status_type","Project Status", df, ~status_type, inline = TRUE), datatable(df, extensions="Scroller", style="bootstrap", class="compact", width="100%",
+options=list(deferRender=TRUE, scrollY=500, scroller=TRUE)),
+renderLeaflet({
+df_temp <- df$data(withSelection = TRUE, withFilter = TRUE)
+leaflet(data=df, options = leafletOptions(preferCanvas = TRUE)) %>%  addProviderTiles(providers$CartoDB.Positron, options = providerTileOptions(updateWhenZooming = FALSE, updateWhenIdle = TRUE))%>% addCircleMarkers(stroke = FALSE, color = "navy", popup = popupTable(df_temp))
+}))
+save_html(try4,"mapexperiment.html")
+```
+
