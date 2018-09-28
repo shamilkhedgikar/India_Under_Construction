@@ -93,3 +93,4 @@ linear_widget2 <- bscols(list(slider_l2,checkbox_l2,dropdown_l2,plotly_plot4))
 save_html(linear_widget2, "linear_widget2.html")
 ```
 
+

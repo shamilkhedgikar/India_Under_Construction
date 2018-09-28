@@ -190,6 +190,7 @@ addResetMapButton()
 saveWidget(newmapfrombeggining6, "statusandunittypes.html", selfcontained = FALSE)
 ```
 
+
 ```{r Chunk7, echo=FALSE}
 library(leaflet)
 library(leaflet.extras)
@@ -231,5 +232,21 @@ df_temp <- df$data(withSelection = TRUE, withFilter = TRUE)
 leaflet(data=df, options = leafletOptions(preferCanvas = TRUE)) %>%  addProviderTiles(providers$CartoDB.Positron, options = providerTileOptions(updateWhenZooming = FALSE, updateWhenIdle = TRUE))%>% addCircleMarkers(stroke = FALSE, color = "navy", popup = popupTable(df_temp))
 }))
 save_html(try4,"mapexperiment.html")
+```
+
+```{r}
+library(leaflet)
+library(tidyverse)
+library(dplyr)
+library(maps)
+library(sp)
+library(htmlwidgets)
+library(mapview)
+library(crosstalk)
+library(htmltools)
+library(ggplot2)
+library(DT) 
+mapview_sample = mapview(linear_multistring2, zcol = c("Project.Status", "Type.of.Unit"), burst = TRUE, hide = TRUE, popup = popupTable(linear_multistring2)) + mapview(nonlinear_points,zcol = c("Project.Status", "Type.of.Unit"), burst = TRUE, hide = TRUE, popup = popupTable(nonlinear_points))
+mapshot(mapview_sample, "wrapper2.html", selfcontained = FALSE)
 ```
 
