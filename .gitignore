@@ -4,3 +4,8 @@
 .Ruserdata
 *.css
 *.js
+Raster-Analysis/linear_raster.tif
+Raster-Analysis/Non_Linear_Projects.RDS
+Raster-Analysis/Linear_Projects.RDS
+Raster-Analysis/Linear_Raster.RDS
+Raster-Analysis/Linear_Buffer_Raster.rds
